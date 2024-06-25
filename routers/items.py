@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from ..dependencies import get_db
-from ..dependencies import schemas
-from ..dependencies.database import get_items, get_user_items
+from ..configurations.database import get_db
+from ..configurations import schemas
+from ..utilities.database_operations import get_items, get_user_items
 
 router = APIRouter(
     prefix="/items",

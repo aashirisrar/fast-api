@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from .models import Item
-from .models import User
-from ..dependencies import schemas
+from ..configurations.models import Item
+from ..configurations.models import User
+from ..configurations import schemas
 
 #database commit operations -> takes session and object to add to database and refresh
 def commit_to_database(db: Session, objectToAdd: any):
