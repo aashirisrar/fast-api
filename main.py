@@ -1,11 +1,15 @@
 from fastapi import FastAPI
 
-from dependencies import engine
-from dependencies import model
+from .dependencies import engine
+from .dependencies import models
+from .routers import items, users
 
-model.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+app.include_router(users.router)
+app.include_router(items.router)
 
 @app.get("/")
 def read_root():
