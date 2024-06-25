@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from dependencies import schema, get_db
+from ..dependencies import get_db
+from ..dependencies import schemas
 
 router = APIRouter(
     prefix="/items",
@@ -9,7 +10,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@router.get("/items/", response_model=list[schema.Item], tags=["Items"])
+@router.get("/items/", response_model=list[schemas.Item])
 def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
