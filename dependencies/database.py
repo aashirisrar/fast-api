@@ -5,6 +5,13 @@ from .models import Item
 from .models import User
 from ..dependencies import schemas
 
+#database commit operations -> takes session and object to add to database and refresh
+def commit_to_database(db: Session, objectToAdd: any):
+    db.add(objectToAdd)
+    db.commit()
+    db.refresh(objectToAdd)
+    return
+
 # database operations
 def get_user(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
@@ -21,9 +28,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 def create_user(db: Session, user: schemas.UserCreate):
     fake_hashed_password = user.password + "notreallyhashed"
     db_user = User(email=user.email, hashed_password=fake_hashed_password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    commit_to_database(db, db_user)
     return db_user
 
 

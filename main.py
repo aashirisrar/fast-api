@@ -13,4 +13,4 @@ app.include_router(items.router)
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"title": "Hello there! Create and View users and items"}
