@@ -1,46 +1,21 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
-from ..configurations import Item
-from ..configurations import User
-from ..configurations import schemas
+from typing import Any, List
 
-#database commit operations -> takes session and object to add to database and refresh
-def commit_to_database(db: Session, objectToAdd: any):
-    db.add(objectToAdd)
-    db.commit()
-    db.refresh(objectToAdd)
-    return
+from .. import schemas
 
-# database operations
-def get_user(db: Session, user_id: int):
-    return db.query(User).filter(User.id == user_id).first()
+def commit_to_database(database: Session, object_to_add: Any):
+    database.add(object_to_add)
+    database.commit()
+    database.refresh(object_to_add)
+    return object_to_add
 
+def get_by_id(database: Session, model: Any, id: int) -> schemas.Item | schemas.User:
+    return database.query(model).filter(model.id == id).first()
 
-def get_user_by_email(db: Session, email: str):
-    return db.query(User).filter(User.email == email).first()
+def get_all(database: Session, model: Any, skip: int = 0, limit: int = 100) -> List[schemas.User] | List[schemas.Item]:
+    return database.query(model).offset(skip).limit(limit).all()
 
-
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(User).offset(skip).limit(limit).all()
-
-
-def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
-    db_user = User(email=user.email, hashed_password=fake_hashed_password)
-    commit_to_database(db, db_user)
-    return db_user
-
-
-def get_items(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Item).offset(skip).limit(limit).all()
-
-
-def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
-    db_item = Item(**item.dump(), owner_id=user_id)
-    commit_to_database(db, db_item)
-    return db_item
-
-# get users along with the count of their items
-def get_user_items(db: Session):
-    return db.query(User.id, func.count(Item.id)).join(Item).group_by(User.id).all()
+def create_instance(database: Session, model: Any, object: Any) -> schemas.UserCreate | schemas.ItemCreate:
+    database_obj = model(**object.dict())
+    return commit_to_database(database, database_obj)
