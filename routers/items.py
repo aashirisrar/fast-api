@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from ..configurations.database import get_db
 from ..configurations import schemas
-from ..utilities.database_operations import get_items, get_user_items
+from ..services.database_operations import get_items, get_user_items
 
 router = APIRouter(
     prefix="/items",

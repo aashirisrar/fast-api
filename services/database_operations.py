@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from ..configurations.models import Item
-from ..configurations.models import User
+from ..configurations import Item
+from ..configurations import User
 from ..configurations import schemas
 
 #database commit operations -> takes session and object to add to database and refresh
@@ -38,12 +38,9 @@ def get_items(db: Session, skip: int = 0, limit: int = 100):
 
 def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
     db_item = Item(**item.dump(), owner_id=user_id)
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
+    commit_to_database(db, db_item)
     return db_item
 
 # get users along with the count of their items
 def get_user_items(db: Session):
     return db.query(User.id, func.count(Item.id)).join(Item).group_by(User.id).all()
-

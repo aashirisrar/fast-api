@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from ..configurations import schemas
 from ..configurations.database import get_db
-from ..utilities.database_operations import get_items, create_user,create_user_item,get_user,get_user_by_email,get_user_items,get_users
+from ..services.database_operations import create_user,create_user_item,get_user,get_user_by_email,get_users
 
 router = APIRouter(
     prefix="/users",
@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 @router.post("/createuser/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def create_user_(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
