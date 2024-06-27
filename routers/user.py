@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from .. import schemas
 from ..models import User
 from ..configurations.database import get_database_session
-from ..services.database_operations import get_all, get_by_id, create_instance
+from ..services.database_operations import get_all, get_by_id,create_user
 
 router = APIRouter(
     prefix="/users",
@@ -12,9 +12,9 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# @router.post("/createuser/", response_model=schemas.UserCreate)
-# def create_user_(user: User, database: Session = Depends(get_database_session)):
-#     return create_instance(database, User,user)
+@router.post("/createuser/", response_model=schemas.User)
+def create_user_(user: schemas.UserCreate, db: Session = Depends(get_database_session)):
+    return create_user(db=db, user=user)
 
 
 @router.get("/allusers/", response_model=list[schemas.User])
