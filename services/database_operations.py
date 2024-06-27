@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import text
 
 from typing import Any, List
 
@@ -12,17 +13,18 @@ def commit_to_database(database: Session, object_to_add: Any):
     return object_to_add
 
 def get_by_id(database: Session, model: Any, id: int) -> schemas.Item | schemas.User:
-    return database.query(model).filter(model.id == id).first()
+    table_name = model.__tablename__
+    query = text(f"SELECT * FROM {table_name} WHERE id={id} LIMIT 1");
+    result = database.execute(query)
+    return result.first()
 
-def get_all(database: Session, model: Any, skip: int = 0, limit: int = 100) -> List[schemas.User] | List[schemas.Item]:
-    return database.query(model).offset(skip).limit(limit).all()
 
-# def create_instance(database: Session, model: Any, object: Any) -> schemas.UserCreate | schemas.ItemCreate:
-#     database_obj = model(**object.dict())
-#     database.add(database_obj)
-#     database.commit()
-#     database.refresh(database_obj)
-#     return database_obj
+def get_all(database: Session, model: Any, skip: int = 0, limit: int = 100) -> List[Any]:
+    table_name = model.__tablename__
+    query = text(f"SELECT * FROM {table_name} LIMIT {limit} OFFSET {skip}")
+    result = database.execute(query)
+    return result.fetchall()
+
 
 def create_user(db: Session, user: schemas.UserCreate):
     fake_hashed_password = user.password + "notreallyhashed"
